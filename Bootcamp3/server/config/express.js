@@ -23,6 +23,8 @@ module.exports.init = function() {
   app.use(bodyParser.json());
 
   /* serve static files - see http://expressjs.com/en/starter/static-files.html */
+  //This code basically shows us the contents of 'index.html' which is stored in the clients folder
+  //This happens whenever we go to the '/' directory (aka, no specific directory selected)
   app.use('/', express.static(__dirname + '/../../client'));
 
 /* The next three middleware are important to the API that we are bulding */
@@ -32,7 +34,9 @@ module.exports.init = function() {
      use the listings router middleware for requests to the api 
      check the variables list above
   */
-  app.use('/api/listings');
+  //Here I added 'listingsRouter' as the middleware for requests to the API
+  //the 'listingsRouter' middleware is defined in '/routes/listings.server.routes'
+  app.use('/api/listings', listingsRouter);
 
 
    /* Request Handler for coordinates
@@ -44,6 +48,8 @@ module.exports.init = function() {
 
   /* Request Handeler for all other routes
      Sends a response (res) to go to the homepage for all routes not specified */ 
+     //Basically for unspecified directories/routes I want to direct the route back to 
+     //the default homepage, which is the '/' directory with 'index.html'
   app.all('/*', function(req, res) {
    
    /*Add YOUR CODE HERE 
@@ -52,7 +58,9 @@ module.exports.init = function() {
       The path.resolve() method returns a string and resolves a sequence of paths or path segments into an absolute path.
       If no path segments are passed, path.resolve() will return the absolute path of the current working directory.
    */
-   //res.sendFile(path.resolve(...));
+   //Note that this code serves up the 'index.html' when alternate routes are passed in,
+   //but it does not change the route back physically to the '/' route
+   res.sendFile(path.resolve("/Users/gregdecanio/Desktop/CEN3031/Bootcamp/BC3/Bootcamp3_2019/Bootcamp3", "client/index.html"));
   });
   
   return app;
