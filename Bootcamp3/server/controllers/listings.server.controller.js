@@ -76,6 +76,14 @@ exports.delete = function(req, res) {
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /* Add your code */
+	//This uses the Listing schema already defined and returns all listings of that schema in a variable called 'listings'
+	Listing.find(function(err, listings){
+		//This will catch any errors and send the correct error response
+		if (err)
+			res.send(err);
+		//Will send all listings to the server, and is already in JSON format
+		res.send(listings);
+		});
 };
 
 /* 
