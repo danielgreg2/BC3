@@ -57,20 +57,59 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
   var listing = req.listing;
 
-  /* Replace the listings's properties with the new properties found in req.body */
- 
-  /*save the coordinates (located in req.results if there is an address property) */
- 
-  /* Save the listing */
+	//Check if the update request has anything in it
+	/*
+	if(!req.body.content) {
+        return res.status(400).json({
+            message: "Listing has no content to be updated"
+        });
+    }
+    * */
 
+	//Find the listing with the ID we want to update
+	Listing.findById(listing, function(err, listing){
+		//Check for errors
+		if (err)
+			res.send(err);
+			
+		/* Replace the listings's properties with the new properties found in req.body */
+		listing.code = req.body.code;
+		listing.name = req.body.name;
+		listing.address = req.body.address;
+		
+		/*save the coordinates (located in req.results if there is an address property) */
+		if (req.body.address){
+			//
+			listing.coordinates = req.results;
+			}
+		/* Save the listing */
+		listing.save(function(err){
+			//check for errors
+			if (err)
+				res.status(400).send(err);
+			res.json({
+				message: 'Listing Updated',
+				data: listing
+				});
+			});
+		});
+
+
+
+	
 };
 
 /* Delete a listing */
 exports.delete = function(req, res) {
   var listing = req.listing;
 
-  /* Add your code to remove the listins */
+  /* Add your code to remove the listing */
 
+	Listing.findByIdAndRemove(listing, function(err){
+		if (err)
+			res.send(err);
+		next();
+		});
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
@@ -81,8 +120,8 @@ exports.list = function(req, res) {
 		//This will catch any errors and send the correct error response
 		if (err)
 			res.send(err);
-		//Will send all listings to the server, and is already in JSON format
-		res.send(listings);
+		//Will send all listings to the server
+		res.json(listings);
 		});
 };
 
