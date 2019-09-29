@@ -79,8 +79,14 @@ exports.update = function(req, res) {
 		
 		/*save the coordinates (located in req.results if there is an address property) */
 		if (req.body.address){
-			//
-			listing.coordinates = req.results;
+			//Debugging that prints to console the coordinates before they are saved to the listing
+			console.log("You have reached the saving coordinates code");
+			console.log(req.results);
+			//Saves latitude and longitude of address to the listing's coordinates field
+			listing.coordinates = {
+				latitude: req.results.lat, 
+				longitude: req.results.lng
+				};
 			}
 		/* Save the listing */
 		listing.save(function(err){

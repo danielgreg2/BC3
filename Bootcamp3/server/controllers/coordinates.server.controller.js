@@ -1,5 +1,7 @@
 var config = require('../config/config'), 
     request = require('request');
+//required to use opencage API
+const opencage = require('opencage-api-client');
 
 
 
@@ -22,7 +24,31 @@ module.exports = function(req, res, next) {
       url: 'https://api.opencagedata.com/geocode/v1/json', 
       qs: options
       }, function(error, response, body) {
-        //For ideas about response and error processing see https://opencagedata.com/tutorials/geocode-in-nodejs
+		opencage.geocode({q: options.q, key: options.key}).then(data => {
+			//console.log(JSON.stringify(data));
+			//For ideas about response and error processing see https://opencagedata.com/tutorials/geocode-in-nodejs
+				if (data.status.code == 200) {
+					//Below is just debugging that prints to console the area and coordinates of address
+					if (data.results.length > 0) {
+					  var place = data.results[0];
+					  console.log(place.formatted);
+					  console.log(place.geometry);
+					}
+				} else if (data.status.code == 402) {
+					//This error occurs if I have used too many free trials of the API
+					console.log('hit free-trial daily limit');
+					console.log('become a customer: https://opencagedata.com/pricing'); 
+				} else {
+					// other possible response codes:
+					// https://opencagedata.com/api#codes
+					console.log('error', data.status.message);
+				}
+			//Saves the coordinates of the address into "req.results"
+			req.results = data.results[0].geometry;
+			next();
+			}).catch(error => {
+				console.log('error', error.message);
+			});
         
         //JSON.parse to get contents. Remember to look at the response's JSON format in open cage data
         
@@ -32,8 +58,6 @@ module.exports = function(req, res, next) {
 
           Assumption: if we get a result we will take the coordinates from the first result returned
         */
-        //  req.results = stores you coordinates
-        next();
     });
   } else {
     next();
