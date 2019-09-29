@@ -57,15 +57,6 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
   var listing = req.listing;
 
-	//Check if the update request has anything in it
-	/*
-	if(!req.body.content) {
-        return res.status(400).json({
-            message: "Listing has no content to be updated"
-        });
-    }
-    * */
-
 	//Find the listing with the ID we want to update
 	Listing.findById(listing, function(err, listing){
 		//Check for errors
@@ -86,8 +77,8 @@ exports.update = function(req, res) {
 			listing.coordinates = {
 				latitude: req.results.lat, 
 				longitude: req.results.lng
-				};
-			}
+			};
+		}
 		/* Save the listing */
 		listing.save(function(err){
 			//check for errors
@@ -96,13 +87,9 @@ exports.update = function(req, res) {
 			res.json({
 				message: 'Listing Updated',
 				data: listing
-				});
 			});
 		});
-
-
-
-	
+	});	
 };
 
 /* Delete a listing */
@@ -112,10 +99,21 @@ exports.delete = function(req, res) {
   /* Add your code to remove the listing */
 
 	Listing.findByIdAndRemove(listing, function(err){
+		//Checks if the listing exists in the database
+		if (!listing){
+			res.status(404).json({
+				message: "Listing not found"
+			});
+		}
+		//Catch for all errors
 		if (err)
 			res.send(err);
-		next();
+		//If deletes successfully, send OK response
+		res.json({
+			message: "Listing successfully delected"
 		});
+		next();
+	});
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
