@@ -55,26 +55,27 @@ exports.read = function(req, res) {
 
 /* Update a listing - note the order in which this function is called by the router*/
 exports.update = function(req, res) {
-  var listing = req.listing;
+	var listing = req.listing;
+	//console.log(listing._id);
 
 	//Find the listing with the ID we want to update
-	Listing.findById(listing, function(err, listing){
+	Listing.findByIdAndUpdate(listing._id, req.body, {new: true}, function(err, listing2){
 		//Check for errors
 		if (err)
-			res.send(err);
+			res.status(404).send(err);
 			
 		/* Replace the listings's properties with the new properties found in req.body */
-		listing.code = req.body.code;
-		listing.name = req.body.name;
-		listing.address = req.body.address;
+		listing2 = req.body;
+		listing2._id = listing._id;
 		
 		/*save the coordinates (located in req.results if there is an address property) */
-		if (req.body.address){
+		if (req.results){
 			//Debugging that prints to console the coordinates before they are saved to the listing
-			console.log("You have reached the saving coordinates code");
-			console.log(req.results);
+			//console.log("You have reached the saving coordinates code");
+			//console.log(req.results);
+			
 			//Saves latitude and longitude of address to the listing's coordinates field
-			listing.coordinates = {
+			listing2.coordinates = {
 				latitude: req.results.lat, 
 				longitude: req.results.lng
 			};
@@ -83,11 +84,8 @@ exports.update = function(req, res) {
 		listing.save(function(err){
 			//check for errors
 			if (err)
-				res.status(400).send(err);
-			res.json({
-				message: 'Listing Updated',
-				data: listing
-			});
+				res.status(404).send(err);
+			res.json(listing2);
 		});
 	});	
 };
@@ -112,7 +110,6 @@ exports.delete = function(req, res) {
 		res.json({
 			message: "Listing successfully delected"
 		});
-		next();
 	});
 };
 
