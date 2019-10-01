@@ -60,7 +60,8 @@ module.exports.init = function() {
    */
    //Note that this code serves up the 'index.html' when alternate routes are passed in,
    //but it does not change the route back physically to the '/' route
-   res.sendFile(path.resolve("/Users/gregdecanio/Desktop/CEN3031/Bootcamp/BC3/Bootcamp3_2019/Bootcamp3", "client/index.html"));
+   //res.sendFile(path.resolve("/Users/gregdecanio/Desktop/CEN3031/Bootcamp/BC3/Bootcamp3_2019/Bootcamp3", "client/index.html"));
+   res.sendFile(path.resolve("client/index.html"));
   });
   
   return app;
